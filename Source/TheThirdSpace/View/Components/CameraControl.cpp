@@ -4,6 +4,7 @@
 #include "CameraControl.h"
 
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 // Sets default values for this component's properties
@@ -61,12 +62,29 @@ void UCameraControl::OneFingerRotate(FVector2D InBeginLocation, FVector2D InCurr
 
 	CurrentRotationYaw = FMath::Fmod(MoveX + LastRotationYaw, 360);
 	//需要把 CurrentRotationPitch 限制在 -30 到 10 之间
-	CurrentRotationPitch =  FMath::Clamp(FMath::Fmod(MoveY + LastRotationPitch, 360),-30.f,10.f);
+	CurrentRotationPitch =  FMath::Clamp(FMath::Fmod(MoveY + LastRotationPitch, 360),-10.f,15.f);
 
 
 	if (SpringArm)
 	{
 		SpringArm->SetRelativeRotation(FRotator(CurrentRotationPitch,CurrentRotationYaw,0));
+
+		if (UKismetMathLibrary::InRange_FloatFloat(CurrentRotationYaw, 70.f, 90.f))
+		{
+			if (OnRangeIn.IsBound() && CurRangeIndex != 1)
+			{
+				OnRangeIn.Broadcast(1);
+				CurRangeIndex = 1;
+			}
+		}
+		else
+		{
+			if (OnRangeIn.IsBound() && CurRangeIndex != 0)
+			{
+				OnRangeIn.Broadcast(0);
+				CurRangeIndex = 0;
+			}
+		}
 	}
 }
 
@@ -80,7 +98,7 @@ void UCameraControl::TwoFingerScale(float InBeginDis, float InCurrentDis)
 	if (SpringArm)
 	{
 		//限制目标臂长度 100,2000
-		SpringArm->TargetArmLength = FMath::Clamp(LastLength + ChangeLength, 100.f, 200.f);
+		SpringArm->TargetArmLength = FMath::Clamp(LastLength + ChangeLength, 100.f, 2000.f);
 	}
 }
 

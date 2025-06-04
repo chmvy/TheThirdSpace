@@ -5,6 +5,8 @@
 #include "CameraControl.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInRange,int32,RangeIndex);
+
 class USpringArmComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -26,6 +28,13 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	//到达某一个特定的范围
+	UPROPERTY(BlueprintAssignable,Category="Cameera")
+	FOnInRange OnRangeIn;
+	//rangeIn 防重入
+	int32 CurRangeIndex = 0;
+	
 	
 
 	UFUNCTION(BlueprintCallable, Category="Camera")
