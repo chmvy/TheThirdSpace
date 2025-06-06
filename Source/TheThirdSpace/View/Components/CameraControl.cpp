@@ -24,6 +24,8 @@ void UCameraControl::InitCameraParam(USpringArmComponent* InSpringArmComp)
 		SpringArm = InSpringArmComp;
 		
 		CurrentRotationPitch = SpringArm->GetRelativeRotation().Pitch;
+
+		//这个值只会在-180到180之间
 		CurrentRotationYaw = SpringArm->GetRelativeRotation().Yaw;
 		
 		LastRotationPitch = CurrentRotationPitch;
@@ -60,6 +62,7 @@ void UCameraControl::OneFingerRotate(FVector2D InBeginLocation, FVector2D InCurr
 	//这里是负值 默认视角pitch值为0
 	MoveY *= -RotationYZRatio / 3;
 
+	//这里set的角度有两种可能，如果是正数区间开始，那么就正常叠加就行了，如果是负数区间
 	CurrentRotationYaw = FMath::Fmod(MoveX + LastRotationYaw, 360);
 	//需要把 CurrentRotationPitch 限制在 -30 到 10 之间
 	CurrentRotationPitch =  FMath::Clamp(FMath::Fmod(MoveY + LastRotationPitch, 360),-10.f,15.f);
@@ -67,9 +70,13 @@ void UCameraControl::OneFingerRotate(FVector2D InBeginLocation, FVector2D InCurr
 
 	if (SpringArm)
 	{
+
+		
 		SpringArm->SetRelativeRotation(FRotator(CurrentRotationPitch,CurrentRotationYaw,0));
 
-		if (UKismetMathLibrary::InRange_FloatFloat(CurrentRotationYaw, 70.f, 90.f))
+		UE_LOG(LogTemp,Warning,TEXT("CurrentYaw:: %f, GetYaw :: %f"),CurrentRotationYaw,SpringArm->GetRelativeRotation().Yaw)
+
+		if (UKismetMathLibrary::InRange_FloatFloat(SpringArm->GetRelativeRotation().Yaw, 80, 150))
 		{
 			if (OnRangeIn.IsBound() && CurRangeIndex != 1)
 			{
@@ -77,7 +84,7 @@ void UCameraControl::OneFingerRotate(FVector2D InBeginLocation, FVector2D InCurr
 				CurRangeIndex = 1;
 			}
 		}
-		else
+		else if (UKismetMathLibrary::InRange_FloatFloat(SpringArm->GetRelativeRotation().Yaw, -140, -20))
 		{
 			if (OnRangeIn.IsBound() && CurRangeIndex != 0)
 			{
@@ -92,7 +99,7 @@ void UCameraControl::TwoFingerScale(float InBeginDis, float InCurrentDis)
 {
 	float ChangeLength = InCurrentDis - InBeginDis;
 
-	ChangeLength *= ScaleRatio;
+	ChangeLength *= -ScaleRatio;
 
 	
 	if (SpringArm)

@@ -48,10 +48,10 @@ public:
 	void FiveFingerTransition();
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category="Camera")
-	float RotationYZRatio;
+	float RotationYZRatio = 0.1;
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category="Camera")
-	float ScaleRatio;
+	float ScaleRatio = 5;
 
 private:
 	UPROPERTY()
