@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{DD10F3DD-4631-808E-1B84-7A82129B84C0}",
+	"EngineAssociation": "4.27",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -18,6 +18,10 @@
 				"Win64",
 				"Mac"
 			]
+		},
+		{
+			"Name": "AndroidCamera",
+			"Enabled": true
 		}
 	]
 }
